@@ -190,16 +190,6 @@ After publishing, run:
 .\publish\console\EDMS.Console.exe
 ```
 
-## Submission Guidance (Professor)
-
-If submission requires executables only, submit:
-
-- `publish/api/EDMS.API.exe` (+ generated runtime files if not single-file)
-- `publish/console/EDMS.Console.exe` (+ generated runtime files if not single-file)
-- optionally include this `README.md` for instructions
-
-If your professor expects one folder, zip the whole `publish` directory.
-
 ## Notes
 
 - Current default runtime uses in-memory DB if connection string is empty.
