@@ -26,13 +26,17 @@ builder.Services.AddSignalR();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connection = builder.Configuration.GetConnectionString("SupabaseConnection");
+    
     if (string.IsNullOrWhiteSpace(connection))
     {
         options.UseInMemoryDatabase("edms-dev");
     }
     else
     {
-        options.UseNpgsql(connection);
+        // 1. Tell EF Core to use Npgsql
+        // 2. Explicitly set the assembly where migrations will be stored
+        options.UseNpgsql(connection, x => 
+            x.MigrationsAssembly("EDMS.Infrastructure")); 
     }
 });
 

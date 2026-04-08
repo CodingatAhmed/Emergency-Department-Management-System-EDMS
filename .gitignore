@@ -1,0 +1,74 @@
+# -----------------------------
+# Environment / secrets
+# -----------------------------
+.env
+.env.*
+!.env.example
+*.secret
+*.secrets.json
+
+# -----------------------------
+# User-specific files
+# -----------------------------
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# -----------------------------
+# Build outputs (.NET)
+# -----------------------------
+**/bin/
+**/obj/
+**/out/
+**/TestResults/
+**/*.trx
+**/*.coverage
+**/*.coveragexml
+
+# -----------------------------
+# Publish / deployment artifacts
+# -----------------------------
+publish/
+Submission/
+Submission.zip
+*.zip
+
+# -----------------------------
+# Large runtime artifacts
+# -----------------------------
+*.exe
+*.dll
+*.pdb
+*.runtimeconfig.json
+*.deps.json
+
+# -----------------------------
+# Package caches / tooling
+# -----------------------------
+packages/
+.nuget/
+artifacts/
+
+# -----------------------------
+# IDE / editor
+# -----------------------------
+.vs/
+.vscode/
+.idea/
+
+# -----------------------------
+# Logs / temp
+# -----------------------------
+*.log
+*.tmp
+*.temp
+
+# -----------------------------
+# Frontend leftovers (if any)
+# -----------------------------
+node_modules/
+dist/
+build/
+

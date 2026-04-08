@@ -3,6 +3,9 @@ using EDMS.Console.Models;
 using Microsoft.Extensions.Configuration;
 using Spectre.Console;
 
+// Essential switch for PostgreSQL timestamp compatibility
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var config = new ConfigurationBuilder()
     .SetBasePath(AppContext.BaseDirectory)
     .AddJsonFile("appsettings.json", optional: false)
@@ -244,11 +247,16 @@ async Task UpdateResourceAsync()
 
 async Task RegisterPatientAsync()
 {
+    var firstName = AnsiConsole.Ask<string>("First name:");
+    var lastName = AnsiConsole.Ask<string>("Last name:");
+    var dobInput = AnsiConsole.Ask<DateTime>("DOB (yyyy-MM-dd):");
+
     var req = new RegisterPatientRequest
     {
-        FirstName = AnsiConsole.Ask<string>("First name:"),
-        LastName = AnsiConsole.Ask<string>("Last name:"),
-        DateOfBirth = AnsiConsole.Ask<DateTime>("DOB (yyyy-MM-dd):"),
+        FirstName = firstName,
+        LastName = lastName,
+        // Convert to UTC to ensure compatibility with PostgreSQL
+        DateOfBirth = DateTime.SpecifyKind(dobInput, DateTimeKind.Utc),
         Gender = AnsiConsole.Ask<string>("Gender (M/F/Other):"),
         ContactNumber = AnsiConsole.Ask<string>("Contact number (optional):"),
         Email = AnsiConsole.Ask<string>("Email (optional):")
@@ -351,10 +359,14 @@ async Task VerifyOrderAsync()
 
 async Task ScheduleAppointmentAsync()
 {
+    var patientId = AnsiConsole.Ask<Guid>("Patient Id:");
+    var scheduledTimeInput = AnsiConsole.Ask<DateTime>("Scheduled datetime (yyyy-MM-dd HH:mm):");
+
     var req = new CreateAppointmentRequest
     {
-        PatientId = AnsiConsole.Ask<Guid>("Patient Id:"),
-        ScheduledTime = AnsiConsole.Ask<DateTime>("Scheduled datetime (yyyy-MM-dd HH:mm):"),
+        PatientId = patientId,
+        // Convert to UTC
+        ScheduledTime = DateTime.SpecifyKind(scheduledTimeInput, DateTimeKind.Utc),
         Department = AnsiConsole.Ask<string>("Department:"),
         DoctorName = AnsiConsole.Ask<string>("Doctor name:")
     };
@@ -366,8 +378,8 @@ async Task ScheduleAppointmentAsync()
 
 async Task ViewAppointmentsByDateAsync()
 {
-    var date = AnsiConsole.Ask<DateTime>("Date (yyyy-MM-dd):").Date;
-    var result = await api.GetAsync<ApiEnvelope<List<AppointmentDto>>>($"/api/appointment?date={date:yyyy-MM-dd}");
+    var dateInput = AnsiConsole.Ask<DateTime>("Date (yyyy-MM-dd):").Date;
+    var result = await api.GetAsync<ApiEnvelope<List<AppointmentDto>>>($"/api/appointment?date={dateInput:yyyy-MM-dd}");
     if (result?.Data is null || result.Data.Count == 0)
     {
         AnsiConsole.MarkupLine("[yellow]No appointments.[/]");
@@ -423,8 +435,8 @@ async Task ResolveAlertAsync()
 
 async Task DailySummaryAsync()
 {
-    var date = AnsiConsole.Ask<DateTime>("Date (yyyy-MM-dd):").Date;
-    var result = await api.GetAsync<ApiEnvelope<DailySummaryDto>>($"/api/reports/daily-summary?date={date:yyyy-MM-dd}");
+    var dateInput = AnsiConsole.Ask<DateTime>("Date (yyyy-MM-dd):").Date;
+    var result = await api.GetAsync<ApiEnvelope<DailySummaryDto>>($"/api/reports/daily-summary?date={dateInput:yyyy-MM-dd}");
     if (result?.Data is null) return;
 
     var d = result.Data;
